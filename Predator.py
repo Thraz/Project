@@ -1,13 +1,12 @@
+from __future__ import print_function
 from numpy import *
 from cmath import pi
 from Entity import *
 class Predator(Entity):
     speed = 3.0
-    preyVisible = False
-    closest = 0
-    def __init__(self):
+    def __init__(self, id):
         print('a predator was initialised')
-        Entity.__init__(self)
+        Entity.__init__(self, id=id)
 
     #def checkVision(self,prey):
     ##check the vision and proximity of a predator
@@ -22,9 +21,6 @@ class Predator(Entity):
     #        else:
     #            return = False
             
-                
-<<<<<<< HEAD
-                
     #def checkCapture(self,prey,vV):
     #    for i in range(prey.size):            
     #        preyLocation = prey[i].location - self.location
@@ -35,10 +31,7 @@ class Predator(Entity):
     #            captured = True
     #        else:
     #            captured = False
-                
-    def action_chase(self,prey):
-=======
-                
+    
     #def checkCapture(self,prey,vV):
     #    for i in range(prey.size):            
     #        preyLocation = prey[i].location - self.location
@@ -51,17 +44,17 @@ class Predator(Entity):
     #            captured = False
                 
     def chase(self,prey):
->>>>>>> 00af54529e293be5eeb2f4ffccda79603d0f6ec6
-        self.preyVisibe, self.closest = self.checkVision(prey)
-        if self.preyVisible == True:
-            self.facing += self.getBearingToTarget(prey[self.closest].location)
-            vV = self.move(self.facing)
-<<<<<<< HEAD
-            return  self.checkCapture(prey,vV)
-        return  False
-=======
-            return self.checkCapture(prey,vV)
->>>>>>> 00af54529e293be5eeb2f4ffccda79603d0f6ec6
+        visible, closest = self.checkVision(prey)
+        if visible == True:
+            self.facing = self.getBearingToTarget(prey[closest].location)
+            self.plt('b')
+            VV = self.getVV()
+            capture = self.checkCapture(prey,VV)
+            self.move()
+            print ('predator movement',capture) 
+            if capture == True:
+                return capture
+        return False
 
         
     #def flank(prey):

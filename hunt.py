@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Environment import Environment
 import sys, time
 
@@ -17,14 +18,15 @@ import pylab
 #sys.exit()
 env = Environment()
 turnCount = 0
-<<<<<<< HEAD
+capture = False
 
-=======
->>>>>>> 00af54529e293be5eeb2f4ffccda79603d0f6ec6
-while turnCount < 500:
-    env.IsOver = env.turn()
-    turnCount += 1
-    #print env.isOver
-    if env.isOver == True:
-        print 'the prey was captured'
+while capture != True:
+    if turnCount > 500:
         break
+    capture = env.turn()
+    turnCount += 1
+
+if capture == True:
+    print ('the prey was captured')
+else:
+    print ('the prey escaped')

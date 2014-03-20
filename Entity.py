@@ -1,19 +1,22 @@
+from __future__ import print_function
 from cmath import pi
 from math import cos, atan2, sin
 from numpy import *
+import pylab
 class Entity:
     speed = 5.0
-    visionDistance = 40.0
-    FOV = pi/4
-    proximity = 10
-    captureDistance = 50.0
-    captured = False
-    location = array([0,0])
+    visionDistance = 50.0
+    FOV = pi/2
+    proximity = 10.0
+    captureDistance = 1.0
+    location = array([0.0,0.0])
     facing = 0.0
     currentState = 0
-
-    def __init__(self):
-        print('an entity was initialised')
+    id = None
+    
+    def __init__(self, id=None):
+        self.id = id
+        print('entity', self.id,  'was initialised')
         #self.action_list = self.get_actions()
         #self.Nactions = len(self.action_list)
         #self.p = np.zeros(self.Nactions)
@@ -44,16 +47,17 @@ class Entity:
     
 
 
+    def getVV(self):
+        return array([self.speed*cos(self.facing),self.speed*sin(self.facing)])
     
-    def move(self,theta):
+    def move(self):
     #move the entity in direction theta
-        velocityVector = array([self.speed*cos(theta),self.speed*sin(theta)])
+        velocityVector = self.getVV()
         self.location += velocityVector
-        return velocityVector
 
-    def getBearingToTarget(self,target):
-        vector = self.location - target
-        targetBearing = atan2(target[1],target[0])
+    def getBearingToTarget(self,targetLocation):
+        vector = targetLocation - self.location
+        targetBearing = atan2(vector[1],vector[0])
         return targetBearing
         
     def getDistanceToTarget(self,target):
@@ -64,32 +68,47 @@ class Entity:
     def checkVision(self,targets):
     #Check the vision and proximity of an entity, returning True and the index of the closest
     #target if one of the targets is visible and False and 0 if none are. 
+        self.facing = fmod(self.facing,2*pi)
         closestTarget = 1000000
         closestTargetI = -1
-        for i in range(targets.size):
-            distance  = self.getDistanceToTarget(targets[i].location)
-            if  distance < self.visionDistance and self.getBearingToTarget(targets[i].location)-self.facing < self.FOV:
-                if distance < closestTarget:
+        for i, target in enumerate(targets):
+            target.facing = fmod(target.facing,2*pi)
+            distance  = self.getDistanceToTarget(target.location)
+            #print('Distance between', self.id, 'and', target.id, 'is', distance)
+            #print('Bearing between', self.id, 'and', target.id, 'is', abs(self.getBearingToTarget(target.location)-self.facing), "compared to",  self.FOV/2)
+            #print(self.getBearingToTarget(target.location)-self.facing)
+            if distance < self.visionDistance:
+                #print("less than vision")
+                if distance < self.proximity: #and distance < closestTarget:
+                    #print ("less than proximity")
                     closestTarget = distance
                     closestTargetI = i
-            elif distance < self.proximity:
-                if distance < closestTarget:
+                elif abs(self.getBearingToTarget(target.location)-self.facing) < self.FOV/2: #and distance < closestTarget: 
+                    #print ("less than FOV")
                     closestTarget = distance
                     closestTargetI = i
-        if closestTarget == -1:
-            return False, 0
-        else:
+        #print(closestTarget,closestTargetI) 
+        if closestTargetI >= 0:
             return True, closestTargetI
+        else:
+            return False, 0
             
     def checkCapture(self,targets,vV):
     #Checks the movement of an entity to check for capture during its movement, returning true if a
     #prey has been captured and false otherwise
-        for i in range(targets.size):            
-            distance = targets[i].location - self.location
-            time =  dot(vV.T,distance)/dot(vV.T,vV)
-            closestApproach = distance - dot(vV,time)
+        for i in range(len(targets)):            
+            targetVector = targets[i].location - self.location
+            time =  dot(vV,targetVector)/dot(vV,vV)
+            closestApproach = targetVector + vV*time
             closestD = sqrt(closestApproach[0]**2 + closestApproach[1]**2)
+            print('Current distance between', self.id, 'and', targets[i].id, 'is', self.getDistanceToTarget(targets[i].location))
+            print('Closest approach distance between', self.id, 'and', targets[i].id, 'is', closestD)
             if closestD < self.captureDistance: 
                 return True
             else:
                 return False
+                
+    def plt(self,colour):
+        nextLocation = self.location + self.getVV()
+        pylab.plot(self.location[0],self.location[1],colour + 'o')
+        pylab.plot([self.location[0],nextLocation[0]],[self.location[1],nextLocation[1]],colour)

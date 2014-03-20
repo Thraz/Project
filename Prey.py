@@ -1,12 +1,11 @@
+from __future__ import print_function
 from Entity import *
 from numpy import *
 class Prey(Entity):
     speed = 3.0
-    visiblePredators = [0,0,0]
-    def __init__(self):
+    def __init__(self, id):
         print('a prey was initialised')
-        visiblePredators = [False,False,False]
-        Entity.__init__(self)
+        Entity.__init__(self, id=id)
         
     #def checkVision(predators):
     #   for entity in predator:
@@ -27,13 +26,13 @@ class Prey(Entity):
     #        else:
     #            captured = False
                 
-<<<<<<< HEAD
-    def action_randomMovement(self,predators):
-=======
     def randomMovement(self,predators):
->>>>>>> 00af54529e293be5eeb2f4ffccda79603d0f6ec6
     #The prey moves in a random direction. Predators is a list of predators
-        theta = (random.random()*2*pi)
-        vV = self.move(theta)
-        self.facing += theta
-        return self.checkCapture(predators,vV)
+        sign = 1 if random.rand() > 0.5 else -1
+        self.facing +=  sign*random.random()*pi/3
+        self.plt('r')
+        VV = self.getVV()
+        capture = self.checkCapture(predators,VV)
+        self.move()
+        print( 'prey movement', capture)
+        return  capture
