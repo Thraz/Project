@@ -8,7 +8,6 @@ import pylab
 import time
 
 class Environment():
-    colours = ["bo","b^","bx"]
     isOver = False
     vertexes = zeros((4,2))
     prey = [Prey(id='Prey')]
@@ -31,7 +30,7 @@ class Environment():
         #----Predator movement----
         for i, predator in enumerate(self.predators):
             if turnCapture != True:
-                turnCapture = predator.chase(self.prey)
+                turnCapture = predator.action_chase(self.prey)
                 pylab.show(block=False)
         
         pylab.ion()
