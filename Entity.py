@@ -5,7 +5,7 @@ from numpy import *
 import inspect
 import pylab
 class Entity:
-    p = 0
+    p = [0.0,0.0,0.0,0.0,0.0]
     speed = 5.0
     visionDistance = 100.0
     FOV = pi/2
@@ -153,7 +153,7 @@ class Entity:
             b = polygon[polygon.index(a)+1]
             u = self.location
             r = target.location
-            v = r - u
+            v = asarray(r) - asarray(u)
             lmbda =(v[0]*a[1]-u[1]*v[0]-v[1]*a[0]+v[1]*u[0])/(a[1]*v[0]-b[1]*v[0]-a[0]*v[1]+b[0]*v[1])
             if lmbda >= 0 and lmbda <= 1:
                 t = 1/v[0]*((1-lmbda)*a[0]+lmbda*b[0]-u[0])

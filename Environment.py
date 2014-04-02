@@ -37,7 +37,7 @@ class Environment():
         
         #initialise prey probabilities
         for prey in self.prey:    
-            prey.defineProbabilities([1.0])
+            prey.defineProbabilities([1.0,1.0,1.0,1.0,1.0])
         #initialise predator probabilities
         for predator in self.predators:
             predator.defineProbabilities([1.0,1.0,1.0,1.0,1.0])
