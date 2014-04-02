@@ -21,10 +21,13 @@ turnCount = 0
 capture = False
 
 while capture != True:
-    if turnCount > 500:
+    if turnCount == 500:
         break
     capture = env.turn()
     turnCount += 1
+    #time.sleep(3)
+    
+pylab.show(block=True)
 
 if capture == True:
     print ('the prey was captured')

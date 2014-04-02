@@ -11,29 +11,60 @@ class Environment():
     isOver = False
     vertexes = zeros((4,2))
     prey = [Prey(id='Prey')]
-    predators = [Predator(id="Predator %d" % i) for i in range(1)]    
+    predators = [Predator(id="Predator %d" % i) for i in range(1)]
+    polygon = [[0,0],[100,0],[130,120],[0,100],[50,30],[0,0]]
+    
     def __init__(self):
         print('initialised environment')
-        self.prey[0].location = [50.0,50.0]
-        for i in range(len(self.predators)):
-            self.predators[i].location = array([25.0,25.0])
+        self.drawArena()
+        #----- Initialise prey position -----
+        self.prey[0].location = [20.0,90.0]
+        #----- Initialise predator positions -----
+        self.predators[0].location = [20.0,5.0]    
+        #self.predators[1].location = [100.0,100.0]
+        #self.predators[2].location = [10.0,95.0]
+        #----- Initialise prey facing -----
+        self.prey[0].facing = 0.0
+        #----- Initialise predator facings -----
+        self.predators[0].facing = pi*1/4
+        #self.predators[1].facing = pi+pi*1/4
+        #self.predators[2].facing = pi+pi*3/4
+        #----- Print initial positions -----
+        for prey in self.prey:
+            prey.plt('r')
+        for predator in self.predators:
+            predator.plt('b')
+        
+        #initialise prey probabilities
+        for prey in self.prey:    
+            prey.defineProbabilities([1.0])
+        #initialise predator probabilities
+        for predator in self.predators:
+            predator.defineProbabilities([1.0,1.0,1.0,1.0,1.0])
+        
             
     def turn(self):
     #Run a full turn for all predators and prey
         print('---------- New Turn ----------')
         turnCapture = False
         #----Prey movement----
-        if turnCapture != True:
-            turnCapture = self.prey[0].randomMovement(self.predators)
-            pylab.show(block=False)
+        for i, prey in enumerate(self.prey):
+            if turnCapture != True:
+                prey.facing = fmod(prey.facing,(2*pi))
+                turnCapture = prey.act(self.predators,self.polygon)
+                pylab.show(block=False)
         
         #----Predator movement----
         for i, predator in enumerate(self.predators):
             if turnCapture != True:
-                turnCapture = predator.action_chase(self.prey)
+                predator.facing = fmod(predator.facing,(2*pi))
+                turnCapture = predator.act(self.prey,self.polygon)
                 pylab.show(block=False)
         
         pylab.ion()
         print('Turn Result, capture =', turnCapture)
         #time.sleep(1)
         return turnCapture
+        
+    def drawArena(self):
+        pylab.plot(*zip(*self.polygon),color='g')
