@@ -15,10 +15,10 @@ class Entity:
     facing = 0.0
     currentState = 0
     id = None
+    lastAction = None
     
     def __init__(self, id=None):
         self.id = id
-        print('entity', self.id,  'was initialised')
         self.action_list = self.get_actions()
         self.Nactions = len(self.action_list)
         self.p = zeros(self.Nactions)
@@ -33,23 +33,23 @@ class Entity:
         return A
         
     def defineProbabilities(self, p):
-        print(self.p)
         assert len(p) == self.p.shape[0]
         self.p = asarray(p, 'f').copy()
         self.p = self.p/sum(self.p)
         
         
-    def act(self,entities,polygon):
+    def act(self, entities, polygon, printing):
         """
         Take a random action based on the current probabilities
         """
         while True:
             a = self.action_list
-            #print(self.p)
             i = random.choice(range(len(a)), p = self.p)-1
-            print('About to take action', a[i][0])
-            result = a[i][1](entities,polygon)
-            return result
+            if printing == True: print('About to take action', a[i][0])
+            result,taken = a[i][1](entities, polygon, printing)
+            self.lastAction = i
+            if taken == True:
+                return result
     
 
 
@@ -68,7 +68,7 @@ class Entity:
         
 
     def getBearingToTarget(self,targetLocation):
-        vector = targetLocation - self.location
+        vector = asarray(targetLocation) - asarray(self.location)
         targetBearing = atan2(vector[1],vector[0])
         return targetBearing
         
@@ -131,10 +131,11 @@ class Entity:
             else:
                 return False
                 
-    def plt(self,colour):
-        nextLocation = self.location + self.getVV()
-        pylab.plot(self.location[0],self.location[1],colour + 'o')
-        pylab.plot([self.location[0],nextLocation[0]],[self.location[1],nextLocation[1]],colour)
+    def plt(self, colour, printing):
+        if printing == True:
+            nextLocation = self.location + self.getVV()
+            pylab.plot(self.location[0],self.location[1],colour + 'o')
+            pylab.plot([self.location[0],nextLocation[0]],[self.location[1],nextLocation[1]],colour)
         
     def reflectBearing(self,a,b,v):
         w = asarray(b) - asarray(a)

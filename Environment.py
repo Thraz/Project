@@ -13,58 +13,68 @@ class Environment():
     prey = [Prey(id='Prey')]
     predators = [Predator(id="Predator %d" % i) for i in range(1)]
     polygon = [[0,0],[100,0],[130,120],[0,100],[50,30],[0,0]]
+    printing = False
     
-    def __init__(self):
-        print('initialised environment')
+    def __init__(self, predatorGenome, preyGenome, printing):
+        if self.printing == True: print('initialised environment')
+        self.printing = printing
         self.drawArena()
         #----- Initialise prey position -----
-        self.prey[0].location = [20.0,90.0]
+        self.prey[0].location = [90.0,95.0]
         #----- Initialise predator positions -----
         self.predators[0].location = [20.0,5.0]    
         #self.predators[1].location = [100.0,100.0]
         #self.predators[2].location = [10.0,95.0]
         #----- Initialise prey facing -----
-        self.prey[0].facing = 0.0
+        self.prey[0].facing = pi*1/2
         #----- Initialise predator facings -----
-        self.predators[0].facing = pi*1/4
+        self.predators[0].facing = pi*3/4
         #self.predators[1].facing = pi+pi*1/4
         #self.predators[2].facing = pi+pi*3/4
         #----- Print initial positions -----
         for prey in self.prey:
-            prey.plt('r')
+            prey.plt('r',self.printing)
         for predator in self.predators:
-            predator.plt('b')
+            predator.plt('b',self.printing)
         
         #initialise prey probabilities
         for prey in self.prey:    
-            prey.defineProbabilities([1.0,1.0,1.0,1.0,1.0])
+            prey.defineProbabilities(preyGenome)
         #initialise predator probabilities
         for predator in self.predators:
-            predator.defineProbabilities([1.0,1.0,1.0,1.0,1.0])
+            predator.defineProbabilities(predatorGenome)
+            
+        if self.printing == True:
+            for prey in self.prey:
+                print(prey.id,'initialised')
+            for predator in self.predators:
+                print(predator.id,'initialised')
         
             
     def turn(self):
     #Run a full turn for all predators and prey
-        print('---------- New Turn ----------')
+        if self.printing == True: print('---------- New Turn ----------')
         turnCapture = False
         #----Prey movement----
+        if self.printing == True: print('---------- prey ----------')
         for i, prey in enumerate(self.prey):
             if turnCapture != True:
                 prey.facing = fmod(prey.facing,(2*pi))
-                turnCapture = prey.act(self.predators,self.polygon)
-                pylab.show(block=False)
+                turnCapture = prey.act(self.predators, self.polygon, self.printing)
+                if self.printing == True: pylab.show(block=False)
         
         #----Predator movement----
+        if self.printing == True: print('---------- predators ----------')
         for i, predator in enumerate(self.predators):
             if turnCapture != True:
                 predator.facing = fmod(predator.facing,(2*pi))
-                turnCapture = predator.act(self.prey,self.polygon)
-                pylab.show(block=False)
+                turnCapture = predator.act(self.prey, self.polygon, self.printing)
+                if self.printing == True: pylab.show(block=False)
         
-        pylab.ion()
-        print('Turn Result, capture =', turnCapture)
+        if self.printing == True: pylab.ion()
+        if self.printing == True: print('Turn Result, capture =', turnCapture)
         #time.sleep(1)
         return turnCapture
         
     def drawArena(self):
-        pylab.plot(*zip(*self.polygon),color='g')
+        if self.printing == True: pylab.plot(*zip(*self.polygon),color='g')

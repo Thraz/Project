@@ -1,35 +1,21 @@
 from __future__ import print_function
 from Environment import Environment
 import sys, time
-
 import pylab
-
-#pylab.plot(pylab.rand(20))
-#pylab.show(block=False)
-
-#time.sleep(3)
-#print("Second plot")
-#sys.stdout.flush()
-
-#pylab.hold(True)
-#pylab.plot(pylab.rand(30), 'r')
-#pylab.show(block=True)
-
-#sys.exit()
-env = Environment()
-turnCount = 0
-capture = False
-
-while capture != True:
-    if turnCount == 500:
-        break
-    capture = env.turn()
-    turnCount += 1
-    #time.sleep(3)
     
-pylab.show(block=True)
-
-if capture == True:
-    print ('the prey was captured')
-else:
-    print ('the prey escaped')
+def hunt(predatorGenome, preyGenome, turnlimit, printing):
+    env = Environment(predatorGenome, preyGenome, printing)
+    capture = False
+    turnCount = 0
+    while capture != True:
+        if turnCount == turnlimit:
+            break
+        capture = env.turn()
+        turnCount += 1
+        #time.sleep(3)
+        
+    pylab.show(block=True)
+    return turnCount
+    
+a = hunt([0.68566336,0.7014364,0.30479355,0.15918317,0.46731013],[0.0,0.0,0.0,0.0,1.0], 1000, True)
+print(a)
