@@ -7,7 +7,7 @@ import pylab
 class Entity:
     p = [0.0,0.0,0.0,0.0,0.0]
     speed = 5.0
-    visionDistance = 100.0
+    visionDistance = 35.0
     FOV = pi/2
     proximity = 5.0
     captureDistance = 0.5

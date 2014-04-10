@@ -60,7 +60,7 @@ class Predator(Entity):
         return False, True
         
     def action_randomMove(self,prey,polygon,printing):
-        if printing == True: print('predator',self.id, 'flank')
+        if printing == True: print('predator',self.id, 'random movement')
         sign = 1 if random.rand() > 0.5 else -1
         self.facing +=  sign*random.random()*pi/4
         self.plt(self.colour,printing)
