@@ -4,8 +4,14 @@ from math import cos, atan2, sin
 from numpy import *
 import inspect
 import pylab
+
 class Entity:
-    p = [0.0,0.0,0.0,0.0,0.0]
+    # Define the probabilities for each entity state
+    p1 = [0.0,0.0,0.0,0.0,0.0]
+    p2 = [0.0,0.0,0.0,0.0,0.0]
+    p3 = [0.0,0.0,0.0,0.0,0.0]
+    p4 = [0.0,0.0,0.0,0.0,0.0]
+    #set default parameters
     speed = 5.0
     visionDistance = 35.0
     FOV = pi/2
@@ -13,9 +19,9 @@ class Entity:
     captureDistance = 0.5
     location = array([0.0,0.0])
     facing = 0.0
-    currentState = 0
     id = None
-    lastAction = None
+    type = None
+    colour = None
     
     def __init__(self, id=None):
         self.id = id
@@ -33,31 +39,72 @@ class Entity:
         return A
         
     def defineProbabilities(self, p):
-        assert len(p) == self.p.shape[0]
-        self.p = asarray(p, 'f').copy()
-        self.p = self.p/sum(self.p)
+        """
+        Defines and sets the probabilities for each state
+        Takes in an array (p) of 20 probabilities, 5 for each state
+        """
+        temp = asarray(p, 'f').copy()
+        #p1 defines probabilities for no visible prey or predators
+        self.p1 = temp[0:5]
+        self.p1 = self.p1/sum(self.p1)
+        #p2 defines probabilities for only visible predators
+        self.p2 = temp[5:10]
+        self.p2 = self.p2/sum(self.p2)
+        #p3 defines probabilities for only visible prey
+        self.p3 = temp[10:15]
+        self.p3 = self.p3/sum(self.p3)
+        #p4 defines probabilities for visible prey and predators
+        self.p4 = temp[15:20]
+        self.p4 = self.p4/sum(self.p4)
+
         
         
-    def act(self, entities, polygon, printing):
+    def act(self, predators, prey, polygon, printing):
         """
         Take a random action based on the current probabilities
+        predators - a list of all predators in the game
+        prey - a list of all prey in the game
+        polygon -  the vertexes that define the arena
+        printing -  boolean defining whether printing is turned off or on
         """
         while True:
             a = self.action_list
-            i = random.choice(range(len(a)), p = self.p)-1
+            #select the state
+            predatorsInVision, x = self.checkVision(predators,polygon)
+            preyInVision, x = self.checkVision(prey,polygon)
+            if predatorsInVision == False and preyInVision == False: 
+                probabilities = self.p1
+            if predatorsInVision == True and preyInVision == False: 
+                probabilities = self.p2
+            if predatorsInVision == False and preyInVision == True: 
+                probabilities = self.p3
+            if predatorsInVision == True and preyInVision == True: 
+                probabilities = self.p4
+            #choose an action based on the state probabilities            
+            i = random.choice(range(len(a)), p = probabilities)-1
+            #take the action
             if printing == True: print('About to take action', a[i][0])
-            result,taken = a[i][1](entities, polygon, printing)
-            self.lastAction = i
+            if self.type == 'prey':
+                result,taken = a[i][1](predators, polygon, printing)
+            elif self.type == 'predator':
+                result,taken = a[i][1](prey, polygon, printing)
             if taken == True:
                 return result
     
 
 
     def getVV(self):
+        """
+        Return the velocity vector calculated using the entities current parameters
+        """
         return array([self.speed*cos(self.facing),self.speed*sin(self.facing)])
     
     def move(self,polygon):
-    #move the entity in direction theta (handles walls)
+        """
+        Move the entity along according to their current parameters, checking for and handling 
+        intersections with walls
+        polygon -  the vertexes that define the arena
+        """
         intersect, reflection = self.checkWall(polygon) #check wall intersection
         if intersect == None:
             velocityVector = self.getVV()
@@ -68,6 +115,10 @@ class Entity:
         
 
     def getBearingToTarget(self,targetLocation):
+        """
+        Returns the bearing between the entity and its target
+        targetLocation -  the targets current location
+        """
         vector = asarray(targetLocation) - asarray(self.location)
         targetBearing = atan2(vector[1],vector[0])
         return targetBearing
@@ -86,6 +137,7 @@ class Entity:
         closestTarget = 1000000
         closestTargetI = -1
         for i, target in enumerate(targets):
+            if target.id == self.id: continue
             target.facing = fmod(target.facing,(2*pi))
             distance  = self.getDistanceToTarget(target.location)
             #print('Distance between', self.id, 'and', target.id, 'is', distance)
@@ -132,12 +184,22 @@ class Entity:
                 return False
                 
     def plt(self, colour, printing):
+        """
+        Plots the current location of the entity and, and its Velocity Vector (a line
+        showing its next movement).
+        colour - the colour which you want the line to be plotted in in the plot format
+            ie green = g, blue = b
+        printing -  boolean defining whether printing is turned off or on
+        """
         if printing == True:
             nextLocation = self.location + self.getVV()
             pylab.plot(self.location[0],self.location[1],colour + 'o')
             pylab.plot([self.location[0],nextLocation[0]],[self.location[1],nextLocation[1]],colour)
         
     def reflectBearing(self,a,b,v):
+        """
+        returns the reflected vector in the wall the entity is about to cross
+        """
         w = asarray(b) - asarray(a)
         wHat = w / linalg.norm(w)
         v2 = dot(v,wHat)*wHat

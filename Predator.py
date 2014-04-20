@@ -6,6 +6,7 @@ from Entity import *
 class Predator(Entity):
     speed = 3.0
     colour = 'b'
+    type = 'predator'
     def __init__(self, id):
         Entity.__init__(self, id=id)
         
@@ -24,8 +25,7 @@ class Predator(Entity):
             capture = self.checkCapture(prey,VV)
             self.move(polygon)
             if printing == True: print ('predator',self.id ,'movement', capture) 
-            if capture == True:
-                return capture, True
+            return capture, True
         return False, False
 
     def action_flank(self,prey,polygon,printing):
@@ -39,8 +39,7 @@ class Predator(Entity):
             capture = self.checkCapture(prey,VV)
             self.move(polygon)
             if printing == True: print ('predator',self.id ,'movement', capture) 
-            if capture == True:
-                return capture, True
+            return capture, True
         return False, False
         
     def action_pause(self,prey,polygon,printing):

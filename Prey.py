@@ -2,13 +2,12 @@ from __future__ import print_function
 from Entity import *
 from numpy import *
 class Prey(Entity):
-    speed = 5
+    speed = 5.0
     colour = 'r'
+    type = 'prey'
     def __init__(self, id):
         Entity.__init__(self, id=id)
-        
-        
-      
+            
     def action_randomMovement(self,predators,polygon,printing):
         """
         The prey moves in a random direction, taking in the list of predators and and the

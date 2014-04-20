@@ -60,7 +60,7 @@ class Environment():
         for i, prey in enumerate(self.prey):
             if turnCapture != True:
                 prey.facing = fmod(prey.facing,(2*pi))
-                turnCapture = prey.act(self.predators, self.polygon, self.printing)
+                turnCapture = prey.act(self.predators, self.prey, self.polygon, self.printing)
                 if self.printing == True: pylab.show(block=False)
         
         #----Predator movement----
@@ -68,7 +68,7 @@ class Environment():
         for i, predator in enumerate(self.predators):
             if turnCapture != True:
                 predator.facing = fmod(predator.facing,(2*pi))
-                turnCapture = predator.act(self.prey, self.polygon, self.printing)
+                turnCapture = predator.act(self.predators, self.prey, self.polygon, self.printing)
                 if self.printing == True: pylab.show(block=False)
         
         if self.printing == True: pylab.ion()
