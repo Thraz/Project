@@ -10,7 +10,8 @@ import copy
 
 def GA(popSize, maxEvaluations):
     evaluations = 0
-    games = 25
+    games = 5
+    flag = False
     
     #----- Initialise the population ------
     population = [[0,0]]*popSize
@@ -24,12 +25,19 @@ def GA(popSize, maxEvaluations):
         
     #----- Perform optimisation -----
     while evaluations < maxEvaluations:
+        if maxEvaluations - maxEvaluations/4 <= evaluations and flag == False:
+            flag = True
+            games = 25
+            population = evaluatePopulation(population,games)
+            print('re-evaluating population')
+        
         fitnesses = fitnessExtractor(population)
         #print(fitnesses)
         #pylab.ion()
         print(evaluations, 'evaluations so far and the best fitness is', min(fitnesses))
         #pylab.plot( evaluations, median(fitnesses), 'bo') #median
         #pylab.plot( evaluations, min(fitnesses), 'go') #minimum
+        #pylab.plot( evaluations, max(fitnesses), 'go') #maximum
         #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 10), 'yx') #10th percentile
         #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 90), 'rx') #90th percentile
         #pylab.show(block=False)
@@ -66,6 +74,12 @@ def GA(popSize, maxEvaluations):
     print('the best genome was', population[bestI][0])
     print('this had a fitness of', population[bestI][1])
     return population[bestI]
+
+    
+def evaluatePopulation(population,games):
+    for i in population:
+        i[1] = fitnessCalculator(i[0],games)
+    return population
 
 def crossover(parentOne, parentTwo, swaps):
     childOne = copy.deepcopy(parentOne)
