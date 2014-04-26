@@ -11,7 +11,7 @@ class Environment():
     isOver = False
     vertexes = zeros((4,2))
     prey = [Prey(id='Prey')]
-    predators = [Predator(id="Predator %d" % i) for i in range(1)]
+    predators = [Predator(id="Predator %d" % i) for i in range(3)]
     polygon = [[20,10],[70,10],[90,50],[70,90],[20,90],[0,50],[20,10]]
     printing = False
     

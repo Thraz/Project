@@ -40,6 +40,8 @@ def GA(popSize, maxEvaluations):
         #pylab.plot( evaluations, max(fitnesses), 'go') #maximum
         #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 10), 'yx') #10th percentile
         #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 90), 'rx') #90th percentile
+        #pylab.xlabel('Fitness Evaluations')
+        #pylab.ylabel('Fitness')
         #pylab.show(block=False)
 
         # selection

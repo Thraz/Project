@@ -32,14 +32,15 @@ def GA(popSize, maxEvaluations):
             print('re-evaluating population')
         
         fitnesses = fitnessExtractor(population)
-        #print(fitnesses)
-        #pylab.ion()
+
         print(evaluations, 'evaluations so far and the best fitness is', max(fitnesses))
         pylab.plot( evaluations, median(fitnesses), 'bo') #median
         pylab.plot( evaluations, max(fitnesses), 'go') #maximum
         pylab.plot( evaluations, min(fitnesses), 'co') #minimum
         pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 10), 'yx') #10th percentile
         pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 90), 'rx') #90th percentile
+        pylab.xlabel('Fitness Evaluations')
+        pylab.ylabel('Fitness')
         pylab.show(block=False)
 
         # selection
@@ -150,5 +151,5 @@ def normalise(genome):
     genome = round_(genome,7)
     return genome
     
-a = GA(30,500)
+a = GA(25,250)
 print(a)
