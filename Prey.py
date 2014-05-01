@@ -37,6 +37,8 @@ class Prey(Entity):
             if printing == True: print ('prey',self.id ,'movement', capture) 
             if capture == True:
                 return capture, True
+            else:
+                return capture, True
         return False, False
         
     def action_split(self,predators,polygon,printing):
@@ -50,6 +52,8 @@ class Prey(Entity):
             self.move(polygon)
             if printing == True: print ('prey',self.id ,'movement', capture) 
             if capture == True:
+                return capture, True
+            else:
                 return capture, True
         return False, False
     

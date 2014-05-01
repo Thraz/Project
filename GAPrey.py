@@ -62,15 +62,11 @@ def GA(popSize, maxEvaluations):
         #replace the worst in the population
         currentWorstI = worstFinder(population)
         if childOne[1] > population[currentWorstI][1]:
-            #print(population[currentWorstI][1], 'replaced with c1', childOne[1])
             population[currentWorstI] = childOne
         currentWorstI = worstFinder(population)
         if childTwo[1] > population[currentWorstI][1]:
-            #print(population[currentWorstI][1], 'replaced with c2', childTwo[1])
             population[currentWorstI] = childTwo
 
-    #cid = fig.canvas.mpl_connect('key_press_event', moveon)
-    #pylab.show()
     bestI = bestFinder(population)
     print('the best genome was', population[bestI][0])
     print('this had a fitness of', population[bestI][1])

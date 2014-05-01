@@ -9,9 +9,9 @@ import time
 
 class Environment():
     isOver = False
-    vertexes = zeros((4,2))
+    numberOfPredators = 3
     prey = [Prey(id='Prey')]
-    predators = [Predator(id="Predator %d" % i) for i in range(3)]
+    predators = [Predator(id="Predator %d" % i) for i in range(numberOfPredators)]
     polygon = [[20,10],[70,10],[90,50],[70,90],[20,90],[0,50],[20,10]]
     printing = False
     
@@ -23,14 +23,14 @@ class Environment():
         self.prey[0].location = [45.0,85.0]
         #----- Initialise predator positions -----
         self.predators[0].location = [45.0,15.0]    
-        #self.predators[1].location = [100.0,100.0]
-        #self.predators[2].location = [10.0,95.0]
+        self.predators[1].location = [40.0,15.0]
+        self.predators[2].location = [50.0,15.0]
         #----- Initialise prey facing -----
         self.prey[0].facing = pi*3/2
         #----- Initialise predator facings -----
         self.predators[0].facing = pi*1/2
-        #self.predators[1].facing = pi+pi*1/4
-        #self.predators[2].facing = pi+pi*3/4
+        self.predators[1].facing = pi*1/2
+        self.predators[2].facing = pi*1/2
         #----- Print initial positions -----
         for prey in self.prey:
             prey.plt('r',self.printing)

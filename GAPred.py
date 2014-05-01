@@ -35,14 +35,14 @@ def GA(popSize, maxEvaluations):
         #print(fitnesses)
         #pylab.ion()
         print(evaluations, 'evaluations so far and the best fitness is', min(fitnesses))
-        #pylab.plot( evaluations, median(fitnesses), 'bo') #median
-        #pylab.plot( evaluations, min(fitnesses), 'go') #minimum
-        #pylab.plot( evaluations, max(fitnesses), 'go') #maximum
-        #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 10), 'yx') #10th percentile
-        #pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 90), 'rx') #90th percentile
-        #pylab.xlabel('Fitness Evaluations')
-        #pylab.ylabel('Fitness')
-        #pylab.show(block=False)
+        pylab.plot( evaluations, median(fitnesses), 'bo') #median
+        pylab.plot( evaluations, max(fitnesses), 'go') #maximum
+        pylab.plot( evaluations, min(fitnesses), 'co') #minimum
+        pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 10), 'yx') #10th percentile
+        pylab.plot( evaluations, stats.scoreatpercentile(fitnesses, 90), 'rx') #90th percentile
+        pylab.xlabel('Fitness Evaluations')
+        pylab.ylabel('Fitness')
+        pylab.show(block=False)
 
         # selection
         parentOne = binaryTournament(population)
@@ -63,18 +63,15 @@ def GA(popSize, maxEvaluations):
         #replace the worst in the population
         currentWorstI = worstFinder(population)
         if childOne[1] < population[currentWorstI][1]:
-            #print(population[currentWorstI][1], 'replaced with c1', childOne[1])
             population[currentWorstI] = childOne
         currentWorstI = worstFinder(population)
         if childTwo[1] < population[currentWorstI][1]:
-            #print(population[currentWorstI][1], 'replaced with c2', childTwo[1])
             population[currentWorstI] = childTwo
 
-    #cid = fig.canvas.mpl_connect('key_press_event', moveon)
-    #pylab.show()
     bestI = bestFinder(population)
     print('the best genome was', population[bestI][0])
     print('this had a fitness of', population[bestI][1])
+    pylab.show(block = True)
     return population[bestI]
 
     
@@ -140,9 +137,6 @@ def fitnessCalculator(genome,games):
         totalTurns += hunt(genome, [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0], 5000, False)
     return totalTurns/games
     
-def moveon(event):
-    pylab.close()
-
 def normalise(genome):
     genome[0:5] = genome[0:5]/sum(genome[0:5])           
     genome[5:10] = genome[5:10]/sum(genome[5:10])  
@@ -151,5 +145,5 @@ def normalise(genome):
     genome = round_(genome,7)
     return genome
     
-a = GA(50,1000)
+a = GA(25,250)
 print(a)

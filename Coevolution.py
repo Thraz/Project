@@ -122,12 +122,12 @@ def fitnessCalculator(genome,type,games,popSize,preyPop,predPop):
         for i in range(games):
             index =  random.randint(0,popSize - 1)
             print('game', i)
-            totalTurns += hunt(preyPop[index][0], genome, 10000, False)
+            totalTurns += hunt(genome, preyPop[index][0], 10000, False)
     else:
         for i in range(games):
             index =  random.randint(0,popSize - 1)
             print('game', i)
-            totalTurns += hunt(genome, predPop[index][0], 10000, False)
+            totalTurns += hunt(predPop[index][0], genome, 10000, False)
     return totalTurns/games
 
     
@@ -213,5 +213,5 @@ def normalise(genome):
     genome = round_(genome,7)
     return genome
 
-a = coevGA(25,250)
+a = coevGA(25,500)
 print(a)
