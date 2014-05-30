@@ -213,5 +213,5 @@ def normalise(genome):
     genome = round_(genome,7)
     return genome
 
-a = coevGA(25,500)
+a = coevGA(25,1000)
 print(a)

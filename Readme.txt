@@ -4,3 +4,4 @@ python hunt.py
 The respective GAs can be ran in the same way, as each script also conatins an example.
 Parameters of every method and class can be edited b passing the initialiser new parameters or 
 by tweaking the initialisation attributes in the scripts themselves.
+Note to speed up the running of GAs it would be adviable to comment out the hunt example
