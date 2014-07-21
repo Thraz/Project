@@ -27,15 +27,15 @@ def coevGA(popSize,maxEvaluations):
         predPop[i][1] = fitnessCalculator(predPop[i][0],'predator',games,popSize,preyPop,predPop)
         preyPop[i][1] = fitnessCalculator(preyPop[i][0],'prey',games,popSize,preyPop,predPop)
         evaluations += 2
-     
     
-
+    initalPreyPop = copy.deepcopy(preyPop)
+    initalPredPop = copy.deepcopy(predPop)
      
      #----- Perform optimisation -----
     while evaluations < maxEvaluations:
         if maxEvaluations - maxEvaluations/4 <= evaluations and flag == False:
             flag = True
-            games = 25
+            games = 5
             predPop = evaluatePopulation(predPop,'predator',games,popSize,preyPop,predPop)
             preyPop = evaluatePopulation(preyPop,'prey',games,popSize,preyPop,predPop)
             print('re-evaluating population')
@@ -44,10 +44,16 @@ def coevGA(popSize,maxEvaluations):
         pylab.ylabel('Fitness')
     
     #----- Predator optimisation -----
-        predfitnesses = fitnessExtractor(predPop)
-        pylab.plot( evaluations, max(predfitnesses), 'bo') #maximum
-        pylab.plot( evaluations, min(predfitnesses), 'bo') #minimum
-        print(evaluations, 'evaluations so far and the best predator fitness is', min(predfitnesses))
+        bestPredI = bestFinder(predPop,'predator')
+        worstPredI = worstFinder(predPop,'predator')
+        pylab.plot( evaluations, predPop[bestPredI][1], 'bo') #maximum
+        pylab.plot( evaluations, predPop[worstPredI][1], 'bo') #minimum
+        pylab.show(block=False)
+        print(evaluations, 'evaluations so far')
+        print('The best predator genome was solution', bestPredI, 'with a genome of', predPop[bestPredI][0])
+        print('this had a fitness of', preyPop[bestPredI][1])
+        
+        
         # selection
         parentOne = binaryTournament(predPop)
         parentTwo = binaryTournament(predPop)
@@ -64,19 +70,22 @@ def coevGA(popSize,maxEvaluations):
         childTwo[1] = fitnessCalculator(childTwo[0],'predator',games,popSize,preyPop,predPop)
         evaluations += 1
         # replace the worst in the population
-        currentWorstI = worstFinder(predPop,'predator')
-        if childOne[1] < predPop[currentWorstI][1]:
-            predPop[currentWorstI] = childOne
-        currentWorstI = worstFinder(predPop,'predator')
-        if childTwo[1] < predPop[currentWorstI][1]:
-            predPop[currentWorstI] = childTwo
+        if childOne[1] < predPop[worstPredI][1]:
+            predPop[worstPredI] = childOne
+        worstPredI = worstFinder(predPop,'predator')
+        if childTwo[1] < predPop[worstPredI][1]:
+            predPop[worstPredI] = childTwo
     
     #----- Prey optimisation -----
-        preyfitnesses = fitnessExtractor(preyPop)
-        pylab.plot( evaluations, max(preyfitnesses), 'ro') #maximum
-        pylab.plot( evaluations, min(preyfitnesses), 'ro') #minimum
+        bestPreyI = bestFinder(preyPop,'prey')
+        worstPreyI = worstFinder(preyPop,'prey')
+        pylab.plot( evaluations, preyPop[bestPreyI][1], 'ro') #maximum
+        pylab.plot( evaluations, preyPop[worstPreyI][1], 'ro') #minimum
         pylab.show(block=False)
-        print(evaluations, 'evaluations so far and the best prey fitness is', max(predfitnesses))
+        print(evaluations, 'evaluations so far')
+        print('The best prey genome was solution', bestPreyI, 'with a genome of', preyPop[bestPreyI][0])
+        print('this had a fitness of', preyPop[bestPreyI][1])
+   
         # selection
         parentOne = binaryTournament(preyPop)
         parentTwo = binaryTournament(preyPop)
@@ -93,23 +102,44 @@ def coevGA(popSize,maxEvaluations):
         childTwo[1] = fitnessCalculator(childTwo[0],'prey',games,popSize,preyPop,predPop)
         evaluations += 1
         #replace the worst in the population
-        currentWorstI = worstFinder(preyPop,'prey')
-        if childOne[1] > preyPop[currentWorstI][1]:
-            preyPop[currentWorstI] = childOne
-        currentWorstI = worstFinder(preyPop,'prey')
-        if childTwo[1] > preyPop[currentWorstI][1]:
-            preyPop[currentWorstI] = childTwo
-       
+        if childOne[1] > preyPop[worstPreyI][1]:
+            preyPop[worstPreyI] = childOne
+        worstPreyI = worstFinder(preyPop,'prey')
+        if childTwo[1] > preyPop[worstPreyI][1]:
+            preyPop[worstPreyI] = childTwo
+
+     
     bestPredI = bestFinder(predPop,'predator')
-    print('the best predator genome was', predPop[bestPredI][0])
+    initialBestPredI = bestFinder(initalPredPop,'predator')
+    print('The best predator genome was solution', bestPredI, 'with a genome of', predPop[bestPredI][0])
     print('this had a fitness of', predPop[bestPredI][1])
+    print(' ')
+    print('Whereas the best inital predator genome was solution', initialBestPredI, 'with a genome of', predPop[initialBestPredI][0])
+    print('this had a fitness of', predPop[initialBestPredI][1])
+    print(' ')
     
     bestPreyI = bestFinder(preyPop,'prey')
-    print('the best prey genome was', preyPop[bestPreyI][0])
+    initialBestPreyI = bestFinder(initalPreyPop,'prey')
+    print('The best prey genome was solution', bestPreyI, 'with a genome of', preyPop[bestPreyI][0])
     print('this had a fitness of', preyPop[bestPreyI][1])
+    print(' ')
+    print('Whereas the best inital prey genome was solution', initialBestPreyI, 'with a genome of', predPop[initialBestPreyI][0])
+    print('this had a fitness of', predPop[initialBestPreyI][1])
+    print(' ')
     
     pylab.show(block=True)
-    return predPop[bestPredI],preyPop[bestPreyI]
+    
+    pylab.clf()
+    
+    for i in range(popSize):
+        pylab.plot(0,initialPredPop[i][1])
+        pylab.plot(1,predPop[i][1])
+        pylab.plot(2,initialPreyPop[i][1])
+        pylab.plot(3,preyPop[i][1])
+    
+    pylab.show(block=True)
+    
+    return predPop[bestPredI],preyPop[bestPreyI],preyPop,predPop,initialPreyPop,initialPredPop
     
     
     
@@ -204,6 +234,12 @@ def fitnessExtractor(population):
     for individual in population:
         fitnesses.append(individual[1])
     return fitnesses
+    
+def genomeExtractor(population):
+    genomes = []
+    for individual in population:
+        genomes.append(individual[0])
+    return genomes
 
 def normalise(genome):
     genome[0:5] = genome[0:5]/sum(genome[0:5])           
@@ -213,5 +249,6 @@ def normalise(genome):
     genome = round_(genome,7)
     return genome
 
-a = coevGA(25,1000)
-print(a)
+a,b,c,d,e,f = coevGA(5,20)
+#print(a)
+
