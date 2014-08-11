@@ -76,7 +76,7 @@ def RTCoev(popSize, maxItterations):
         pylab.plot(itteration, primaryPop[0][1], colour + 'o')
         pylab.plot(itteration, primaryPop[med][1], colour + 'x')
         pylab.plot(itteration, primaryPop[quat][1], colour + '^')
-        pylab.plot(itteration, primaryPop[19][1], colour + 'o')
+        pylab.plot(itteration, primaryPop[popSize - 1][1], colour + 'o')
 
         # ----- Standard GA ------
         
@@ -85,9 +85,12 @@ def RTCoev(popSize, maxItterations):
         parent2 = primaryPop[binaryTournament(popSize)][0]
         
         # Prepare new genomes
-        child1Genome, child2Genome = crossover(parent1, parent2, 5)
-        child1Genome = normalise(mutation(child1Genome,2))
-        child2Genome = normalise(mutation(child2Genome,2))
+        #   child1Genome, child2Genome = crossover(parent1, parent2, 5)
+        child1Genome, child2Genome = crossover2(parent1, parent2)
+        #   child1Genome = normalise(mutation(child1Genome,2))
+        #   child2Genome = normalise(mutation(child2Genome,2))
+        child1Genome = normalise(mutation2(child1Genome))
+        child2Genome = normalise(mutation2(child2Genome))
         child1 = [child1Genome, 10000, zeros(3)]
         child2 = [child2Genome, 10000, zeros(3)]
         
@@ -161,34 +164,34 @@ def RTCoev(popSize, maxItterations):
         # Replacement
         if flag == 'pred':
             if child1[1] < child2[1]:
-                if primaryPop[19][1] > child2[1]:
-                    primaryPop[19] = child2
-                if primaryPop[19][1] > child1[1]:
-                    primaryPop[19] = child1
-                if primaryPop[18][1] > child1[1]:
-                    primaryPop[19] = child1
+                if primaryPop[popSize - 1][1] > child2[1]:
+                    primaryPop[popSize - 1] = child2
+                if primaryPop[popSize - 1][1] > child1[1]:
+                    primaryPop[popSize - 1] = child1
+                if primaryPop[popSize - 2][1] > child1[1]:
+                    primaryPop[popSize - 1] = child1
             else:
-                if primaryPop[19][1] > child1[1]:
-                    primaryPop[19] = child1
-                if primaryPop[19][1] > child2[1]:
-                    primaryPop[19] = child2
-                if primaryPop[18][1] > child2[1]:
-                    primaryPop[19] = child2    
+                if primaryPop[popSize - 1][1] > child1[1]:
+                    primaryPop[popSize - 1] = child1
+                if primaryPop[popSize - 1][1] > child2[1]:
+                    primaryPop[popSize - 1] = child2
+                if primaryPop[popSize - 2][1] > child2[1]:
+                    primaryPop[popSize - 1] = child2    
         else:
             if child1[1] > child2[1]:
-                if primaryPop[19][1] < child2[1]:
-                    primaryPop[19] = child2
-                if primaryPop[19][1] < child1[1]:
-                    primaryPop[19] = child1
-                if primaryPop[18][1] < child1[1]:
-                    primaryPop[19] = child1
+                if primaryPop[popSize - 1][1] < child2[1]:
+                    primaryPop[popSize - 1] = child2
+                if primaryPop[popSize - 1][1] < child1[1]:
+                    primaryPop[popSize - 1] = child1
+                if primaryPop[popSize - 2][1] < child1[1]:
+                    primaryPop[popSize - 1] = child1
             else:
-                if primaryPop[19][1] < child1[1]:
-                    primaryPop[19] = child1
-                if primaryPop[19][1] < child2[1]:
-                    primaryPop[19] = child2
-                if primaryPop[18][1] < child2[1]:
-                    primaryPop[19] = child2    
+                if primaryPop[popSize - 1][1] < child1[1]:
+                    primaryPop[popSize - 1] = child1
+                if primaryPop[popSize - 1][1] < child2[1]:
+                    primaryPop[popSize - 1] = child2
+                if primaryPop[popSize - 2][1] < child2[1]:
+                    primaryPop[popSize - 1] = child2    
         
         # ----- Refinement ------
         
@@ -247,13 +250,13 @@ def RTCoev(popSize, maxItterations):
     # Plot final populations
     pylab.plot(itteration, predPop[0][1], 'bo')
     pylab.plot(itteration, predPop[med][1], 'bx')
-    pylab.plot(itteration, predPop[quat][1], 'b^')
-    pylab.plot(itteration, predPop[19][1], 'bo')
+    #pylab.plot(itteration, predPop[quat][1], 'b^')
+    #pylab.plot(itteration, predPop[popSize - 1][1], 'bo')
     
     pylab.plot(itteration, preyPop[0][1], 'bo')
     pylab.plot(itteration, preyPop[med][1], 'bx')
-    pylab.plot(itteration, preyPop[quat][1], 'b^')
-    pylab.plot(itteration, preyPop[19][1], 'bo')
+    #pylab.plot(itteration, preyPop[quat][1], 'b^')
+    #pylab.plot(itteration, preyPop[popSize - 1][1], 'bo')
     
     print('The best predator solution had a median fitness of', predPop[0][1])
     print('Its Genome was:')
@@ -288,7 +291,6 @@ def normalise(genome):
     genome[5:10] = genome[5:10]/sum(genome[5:10])  
     genome[10:15] = genome[10:15]/sum(genome[10:15])  
     genome[15:20] = genome[15:20]/sum(genome[15:20])  
-    genome = round_(genome,7)
     return genome    
     
 def fitnessCalculator(preyGenome, predGenome):
@@ -300,8 +302,8 @@ def medianCalculator(fitnesses):
     return X
    
 def binaryTournament(popSize):
-    index1 = random.randint(0,popSize-1)
-    index2 = random.randint(0,popSize-1)
+    index1 = random.randint(0,popSize)
+    index2 = random.randint(0,popSize)
     if index1 > index2:
         return index1
     else:
@@ -319,12 +321,21 @@ def crossover(parent1, parent2, swaps):
 def mutation(child,mutations):
     for i in range(mutations):
         r = random.randint(0,20)
-        child[r] = round(random.random(),7)
     return child
 
-   
+def crossover2(parent1, parent2):
+    r = random.random()
+    child1 = r*asarray(parent1) + (1-r)*asarray(parent2)
+    child2 = (1-r)*asarray(parent1) + r*asarray(parent2)
+    return child1, child2
     
+def mutation2(child, s=10):
+    r =  random.randint(0,4)
+    D = random.dirichlet(child[r*5:(r+1)*5]*s, 1)
+    child[r*5:(r+1)*5] = squeeze(D)
+    return child
     
+
+set_printoptions(precision=7, suppress=True)
     
-    
-RTCoev(25, 1000)
+RTCoev(50, 5000)
