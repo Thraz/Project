@@ -251,12 +251,3 @@ class Entity:
                         position = u+(v*t)*0.9
                         return position , mirror
         return None, None
-        
-        
-        
-        
-        
-        
-        
-        
-        
